@@ -1,16 +1,17 @@
 pipeline {
-    agent any
+    agent any  // Can run on any available Jenkins agent
 
     environment {
-        IMAGE_NAME = 'my-web-app'
-        CONTAINER_NAME = 'my-web-app-container'
-        CONTAINER_PORT = '8080'
-        HOST_PORT = '7000'
+        IMAGE_NAME = 'my-web-app'       // Name of the Docker image
+        CONTAINER_NAME = 'my-web-app-container' // Container name
+        CONTAINER_PORT = '8080'          // Port the app is running on inside the container
+        HOST_PORT = '7000'              // Port to access the app from the host machine
     }
 
     stages {
         stage('Clone') {
             steps {
+                // Clone the repository (change the URL to your Git repo)
                 git 'https://github.com/phanindra4568/automationdeployment.git'
             }
         }
@@ -18,8 +19,10 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Run Maven or Gradle build to create the JAR file
-                    sh 'mvn clean install' // Or './gradlew build' for Gradle
+                    // Ensure Maven runs in the correct directory if the pom.xml is in a subdirectory
+                    dir('my-app') {  // Change this to the actual subdirectory where pom.xml is located
+                        sh 'mvn clean install'
+                    }
                 }
             }
         }
@@ -27,7 +30,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image using the Dockerfile
+                    // Build the Docker image using the Dockerfile in the repository
                     docker.build("${IMAGE_NAME}")
                 }
             }
@@ -36,6 +39,8 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running tests (optional)'
+                // Add your test commands here if you want to run unit tests or integration tests.
+                // e.g., mvn test (for Maven), npm test (for Node.js), pytest (for Python)
             }
         }
 
