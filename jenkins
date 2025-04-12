@@ -11,6 +11,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
+                // Clone the repository (change the URL to your Git repo)
                 git 'https://github.com/phanindra4568/automationdeployment.git'
             }
         }
@@ -18,7 +19,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_NAME}")
+                    // Build the Docker image
+                    docker.build("${IMAGE_NAME}", ".")
                 }
             }
         }
@@ -32,7 +34,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Stop any existing container with the same name
                     sh "docker rm -f ${CONTAINER_NAME} || true"
+
+                    // Run the container and map the desired ports (host:container)
                     docker.image("${IMAGE_NAME}").run("-d -p ${HOST_PORT}:${CONTAINER_PORT} --name ${CONTAINER_NAME}")
                 }
             }
@@ -41,6 +46,7 @@ pipeline {
 
     post {
         always {
+            // Clean up Docker resources (optional)
             echo 'Cleaning up Docker resources...'
             sh "docker system prune -f"
         }
