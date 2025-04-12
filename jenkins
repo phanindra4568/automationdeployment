@@ -11,16 +11,24 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                // Clone the repository (change the URL to your Git repo)
                 git 'https://github.com/phanindra4568/automationdeployment.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Run Maven or Gradle build to create the JAR file
+                    sh 'mvn clean install' // Or './gradlew build' for Gradle
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
-                    docker.build("${IMAGE_NAME}", ".")
+                    // Build the Docker image using the Dockerfile
+                    docker.build("${IMAGE_NAME}")
                 }
             }
         }
@@ -34,7 +42,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Stop any existing container with the same name
+                    // Stop any running container with the same name
                     sh "docker rm -f ${CONTAINER_NAME} || true"
 
                     // Run the container and map the desired ports (host:container)
