@@ -46,11 +46,4 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            // Clean up Docker resources (optional)
-            echo 'Cleaning up Docker resources...'
-            sh "docker system prune -f"
-        }
-    }
-}
+   
