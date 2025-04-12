@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the compiled JAR file from the target folder (assuming you're using Maven or Gradle)
-COPY hellworld.java /app
+COPY . /app
 
 # Expose the port the app runs on (inside the container)
 EXPOSE 8080
