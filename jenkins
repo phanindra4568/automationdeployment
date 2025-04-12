@@ -12,18 +12,7 @@ pipeline {
         stage('Clone') {
             steps {
                 // Clone the repository (change the URL to your Git repo)
-                git 'https://github.com/phanindra4568/automationdeployment.git'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                script {
-                    // Ensure Maven runs in the correct directory if the pom.xml is in a subdirectory
-                    dir('my-app') {  // Change this to the actual subdirectory where pom.xml is located
-                        sh 'mvn clean install'
-                    }
-                }
+                git 'https://github.com/your-username/your-repo.git'
             }
         }
 
