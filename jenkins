@@ -1,0 +1,56 @@
+pipeline {
+    agent any  // Can run on any available Jenkins agent
+
+    environment {
+        IMAGE_NAME = 'my-web-app'       // Name of the Docker image
+        CONTAINER_NAME = 'my-web-app-container' // Container name
+        CONTAINER_PORT = '8080'          // Port the app is running on inside the container
+        HOST_PORT = '7000'              // Port to access the app from the host machine
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                // Clone the repository (change the URL to your Git repo)
+                git 'https://github.com/your-username/your-repo.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image using the Dockerfile in the repository
+                    docker.build("${IMAGE_NAME}")
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests (optional)'
+                // Add your test commands here if you want to run unit tests or integration tests.
+                // e.g., mvn test (for Maven), npm test (for Node.js), pytest (for Python)
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Stop any running container with the same name
+                    sh "docker rm -f ${CONTAINER_NAME} || true"
+
+                    // Run the container and map the desired ports (host:container)
+                    docker.image("${IMAGE_NAME}").run("-d -p ${HOST_PORT}:${CONTAINER_PORT} --name ${CONTAINER_NAME}")
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up Docker resources (optional)
+            echo 'Cleaning up Docker resources...'
+            sh "docker system prune -f"
+        }
+    }
+}
