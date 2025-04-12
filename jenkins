@@ -32,18 +32,13 @@ pipeline {
                 // e.g., mvn test (for Maven), npm test (for Node.js), pytest (for Python)
             }
         }
-
-        stage('Deploy') {
+        stage('Docker Run') {
             steps {
-                script {
-                    // Stop any running container with the same name
-                    sh "docker rm -f ${CONTAINER_NAME} || true"
-
-                    // Run the container and map the desired ports (host:container)
-                    docker.image("${IMAGE_NAME}").run("-d -p ${HOST_PORT}:${CONTAINER_PORT} --name ${CONTAINER_NAME}")
-                }
+                echo 'Running Docker container for 10 minutes...'
+                sh 'docker run --rm helloworld-app & sleep 600'
             }
         }
+
     }
  }
    
