@@ -1,10 +1,26 @@
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+
 public class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World! The container will stay alive for 10 minutes.");
-        try {
-            Thread.sleep(10 * 60 * 1000); // Sleep for 10 minutes (600,000 ms)
-        } catch (InterruptedException e) {
-            System.out.println("Sleep interrupted.");
+    public static void main(String[] args) throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        server.createContext("/", new MyHandler());
+        server.setExecutor(null); // default executor
+        server.start();
+        System.out.println("Server started at http://localhost:8080");
+    }
+
+    static class MyHandler implements HttpHandler {
+        public void handle(HttpExchange exchange) throws IOException {
+            String response = "Hello from Dockerized Java App!";
+            exchange.sendResponseHeaders(200, response.length());
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
         }
     }
 }
